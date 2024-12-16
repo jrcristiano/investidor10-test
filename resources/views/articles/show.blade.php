@@ -19,7 +19,7 @@
             <div class="col">
                 <h1 class="fw-bold i10-text-dark">{{ $article->title }}</h1>
                 <h4 class="i10-text-dark line-height-2 i10-text-dark">{{ $article->subtitle }}</h4>
-                <img class="d-block mx-auto my-4 w-100 rounded" src="{{ $article->banner }}" alt="Banner do artigo">
+                <img class="d-block mx-auto my-4 w-100 rounded" src="{{ $article->asset_banner }}" alt="Banner do artigo">
                 <p class="text-justify line-height-1 fs-18">{{ $article->content }}</p>
             </div>
         </div>

@@ -40,6 +40,7 @@
                     type="search"
                     placeholder="Pesquisar"
                     aria-label="Search"
+                    value="{{ request('busca') }}"
                 />
 
                 <button class="btn btn-gold" type="submit">
