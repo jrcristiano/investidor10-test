@@ -20,11 +20,11 @@ return new class extends Migration
             $table->string('password');
 
             $table->enum('role', [
-               UserRole::ADMIN->value,
-               UserRole::REDATOR->value,
-               UserRole::CONSUMIDOR->value,
+                UserRole::ADMIN->value,
+                UserRole::REDATOR->value,
+                UserRole::CONSUMIDOR->value,
             ])
-            ->default(UserRole::CONSUMIDOR->value);
+                ->default(UserRole::CONSUMIDOR->value);
 
             $table->rememberToken();
             $table->softDeletes();

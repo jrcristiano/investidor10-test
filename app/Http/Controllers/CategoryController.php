@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     private CategoryService $categoryService;
+
     private ArticleService $articleService;
 
     public function __construct(ArticleService $articleService, CategoryService $categoryService)

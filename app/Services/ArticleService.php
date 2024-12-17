@@ -138,15 +138,16 @@ class ArticleService extends Service
         return $this->findOrFail($id);
     }
 
-    public function saveArticle(array $data, int $id = null)
+    public function saveArticle(array $data, ?int $id = null)
     {
         $data['id'] = $id ?? null;
 
         $data['user_id'] = Auth::user()->id;
 
-        if (!$id && $data['banner']) {
-            $data['banner'] = '/' . $this->uploadImage('banner');
+        if (! $id && $data['banner']) {
+            $data['banner'] = '/'.$this->uploadImage('banner');
             $data['slug'] = Str::slug($data['title']);
+
             return $this->save($data);
         }
 
@@ -174,7 +175,7 @@ class ArticleService extends Service
     {
         $request = request();
 
-        if (!$request->hasFile($inputName) || !$request->file($inputName)->isValid()) {
+        if (! $request->hasFile($inputName) || ! $request->file($inputName)->isValid()) {
             return null;
         }
 
@@ -189,11 +190,10 @@ class ArticleService extends Service
         return $data[$inputName];
     }
 
-
     public function updateImage(array $data, $inputName, $oldPath = null)
     {
         if ($data[$inputName]) {
-            $file = storage_path('app/public/' . $oldPath);
+            $file = storage_path('app/public/'.$oldPath);
 
             if ($oldPath && file_exists($file)) {
                 unlink($file);
@@ -219,7 +219,7 @@ class ArticleService extends Service
         $day = date('d');
 
         $path = "$subFolder/$year/$month/$day";
-        if (!File::exists(storage_path($path))) {
+        if (! File::exists(storage_path($path))) {
             File::makeDirectory(storage_path($path), 0755, true);
         }
 

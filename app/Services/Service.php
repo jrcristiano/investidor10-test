@@ -16,28 +16,31 @@ abstract class Service
     public function paginated(Request $request)
     {
         $filters = $this->filters($request);
+
         return $this->repository->fetchAll([
             ...$filters,
             'paginated' => true,
         ]);
     }
 
-
     public function fetchAll(Request $request)
     {
         $filters = $this->filters($request);
+
         return $this->repository->fetchAll($filters);
     }
 
     public function first(Request $request)
     {
         $filters = $this->filters($request);
+
         return $this->repository->first($filters);
     }
 
     public function firstOrFail(Request $request)
     {
         $filters = $this->filters($request);
+
         return $this->repository->firstOrFail($filters);
     }
 
@@ -55,7 +58,7 @@ abstract class Service
     {
         $data['id'] = $data['id'] ?? null;
 
-        if (!$data['id']) {
+        if (! $data['id']) {
             return $this->create($data);
         }
 

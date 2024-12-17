@@ -56,6 +56,7 @@ class Article extends Model
     public function getAssetBannerAttribute()
     {
         $banner = $this->attributes['banner'];
+
         return str_contains($banner, 'https://media') ? $banner : asset("storage/{$banner}");
     }
 
@@ -83,6 +84,7 @@ class Article extends Model
     {
         $fillable = $this->fillable;
         $fillable[] = 'created_at';
+
         return $fillable;
     }
 }

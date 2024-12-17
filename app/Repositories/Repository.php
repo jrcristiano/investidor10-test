@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 abstract class Repository
 {
-    protected $model, $table;
+    protected $model;
+
+    protected $table;
 
     public function __construct($model)
     {
@@ -16,7 +18,7 @@ abstract class Repository
     {
         $query = $this->query($params);
 
-        if (!$params['paginated']) {
+        if (! $params['paginated']) {
             return $query->get();
         }
 
@@ -26,7 +28,7 @@ abstract class Repository
             'page',
             $params['page'],
         )
-        ->withQueryString();
+            ->withQueryString();
     }
 
     private function query(array $params)
@@ -35,7 +37,7 @@ abstract class Repository
 
         return $this->model->select($columns ?? ['*'])
             ->when(
-                isset($whereILike) && !$this->isEmptyArray($whereILike),
+                isset($whereILike) && ! $this->isEmptyArray($whereILike),
                 function ($query) use ($whereILike) {
                     foreach ($whereILike as $columnName => $value) {
                         if (is_string($columnName)) {
@@ -45,7 +47,7 @@ abstract class Repository
                 }
             )
             ->when(
-                isset($where) && !$this->isEmptyArray($where),
+                isset($where) && ! $this->isEmptyArray($where),
                 function ($query) use ($where) {
                     foreach ($where as $columnName => $value) {
                         if (is_string($columnName)) {
@@ -57,7 +59,7 @@ abstract class Repository
             ->when(
                 isset($orderBy) && is_string($orderBy) && isset($sortBy) && (is_string($sortBy) || is_array($sortBy)),
                 function ($query) use ($sortBy, $orderBy) {
-                    if (is_string($sortBy) && !str_contains($sortBy, ',')) {
+                    if (is_string($sortBy) && ! str_contains($sortBy, ',')) {
                         $query->orderBy($sortBy, $orderBy);
                     } elseif (is_string($sortBy) && str_contains($sortBy, ',')) {
                         $sortBy = explode(',', $sortBy);
@@ -71,19 +73,18 @@ abstract class Repository
                 }
             )
             ->when(
-                $withLimit == true && isset($offset, $limit) && (!isset($paginate) || !$paginate),
+                $withLimit == true && isset($offset, $limit) && (! isset($paginate) || ! $paginate),
                 function ($query) use ($offset, $limit) {
                     $query->skip($offset)->take($limit);
                 }
             )
             ->when(
-                isset($relations) && is_array($relations) && !$this->isEmptyArray($relations),
+                isset($relations) && is_array($relations) && ! $this->isEmptyArray($relations),
                 function ($query) use ($relations) {
                     $query->with($relations);
                 }
             );
     }
-
 
     public function first($params = [])
     {

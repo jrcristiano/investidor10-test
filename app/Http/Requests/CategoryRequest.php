@@ -23,10 +23,10 @@ class CategoryRequest extends FormRequest
     {
         $categoryId = $this->route('id');
 
-        if (!$categoryId) {
+        if (! $categoryId) {
             return [
                 'name' => 'required|string|min:3|max:255|unique:categories',
-                'description' => 'nullable|string|max:255|unique:categories'
+                'description' => 'nullable|string|max:255|unique:categories',
             ];
         }
 

@@ -49,6 +49,7 @@ class CategoryService extends Service
             ],
         ]);
     }
+
     public function getPaginatedCategoryList(Request $request)
     {
         $filters = $this->filters($request);
@@ -69,12 +70,13 @@ class CategoryService extends Service
         return $this->findOrFail($id);
     }
 
-    public function saveCategory(array $data, int|null $id = null)
+    public function saveCategory(array $data, ?int $id = null)
     {
         $data['user_id'] = Auth::user()->id;
 
         if ($id) {
             $data['id'] = $id;
+
             return $this->save($data);
         }
 

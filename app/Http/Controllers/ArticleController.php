@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 class ArticleController extends Controller
 {
     private CategoryService $categoryService;
+
     private ArticleService $articleService;
 
     public function __construct(ArticleService $articleService, CategoryService $categoryService)
@@ -24,6 +25,7 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         $articles = $this->articleService->getPaginatedArticleList($request);
+
         return view('articles.index', [
             'articles' => $articles,
             'categories' => $this->categoryService->getCategoryListWithIdAndName($request),
