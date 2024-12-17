@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ArticleRequest;
 use App\Services\ArticleService;
 use App\Services\CategoryService;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -24,35 +26,53 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
-        $articles = $this->articleService->getPaginatedArticleList($request);
+        try {
+            $articles = $this->articleService->getPaginatedArticleList($request);
 
-        return view('articles.index', [
-            'articles' => $articles,
-            'categories' => $this->categoryService->getCategoryListWithIdAndName($request),
-        ]);
+            return view('articles.index', [
+                'articles' => $articles,
+                'categories' => $this->categoryService->getCategoryListWithIdAndName($request),
+            ]);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao carregar artigos: '.$e->getMessage()]);
+        }
     }
 
     public function show(string $slug, Request $request)
     {
-        return view('articles.show', [
-            'article' => $this->articleService->findArticleBySlugOrFail($slug),
-            'categories' => $this->categoryService->getPaginatedCategoryList($request),
-        ]);
+        try {
+            return view('articles.show', [
+                'article' => $this->articleService->findArticleBySlugOrFail($slug),
+                'categories' => $this->categoryService->getPaginatedCategoryList($request),
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('articles.index')->withErrors(['error' => 'Artigo não encontrado.']);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao carregar o artigo: '.$e->getMessage()]);
+        }
     }
 
     public function getPaginatedArticleList(Request $request)
     {
-        return view('articles.index', [
-            'articles' => $this->articleService->getPaginatedArticleList($request),
-        ]);
+        try {
+            return view('articles.index', [
+                'articles' => $this->articleService->getPaginatedArticleList($request),
+            ]);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao carregar artigos: '.$e->getMessage()]);
+        }
     }
 
     public function getPaginatedArticleListByUserId(Request $request)
     {
-        return view('articles.index', [
-            'articles' => $this->articleService->getPaginatedArticleListByUserId($request),
-            'categories' => $this->categoryService->getPaginatedCategoryList($request),
-        ]);
+        try {
+            return view('articles.index', [
+                'articles' => $this->articleService->getPaginatedArticleListByUserId($request),
+                'categories' => $this->categoryService->getPaginatedCategoryList($request),
+            ]);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao carregar artigos: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -60,9 +80,13 @@ class ArticleController extends Controller
      */
     public function create(Request $request)
     {
-        return view('articles.create', [
-            'categories' => $this->categoryService->getCategoryListWithIdAndName($request),
-        ]);
+        try {
+            return view('articles.create', [
+                'categories' => $this->categoryService->getCategoryListWithIdAndName($request),
+            ]);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao carregar categorias: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -70,12 +94,16 @@ class ArticleController extends Controller
      */
     public function store(ArticleRequest $request)
     {
-        $data = $request->only(array_keys($request->rules()));
+        try {
+            $data = $request->only(array_keys($request->rules()));
 
-        $savedArticle = $this->articleService->saveArticle($data);
+            $savedArticle = $this->articleService->saveArticle($data);
 
-        return redirect()->route('articles.index')
-            ->with('success', "Artigo {$savedArticle->title} foi criado com sucesso.");
+            return redirect()->route('articles.index')
+                ->with('success', "Artigo {$savedArticle->title} foi criado com sucesso.");
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao criar artigo: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -83,10 +111,16 @@ class ArticleController extends Controller
      */
     public function edit(Request $request, int $id)
     {
-        return view('articles.edit', [
-            'article' => $this->articleService->findArticleByIdOrFail($id),
-            'categories' => $this->categoryService->getCategoryListWithIdAndName($request),
-        ]);
+        try {
+            return view('articles.edit', [
+                'article' => $this->articleService->findArticleByIdOrFail($id),
+                'categories' => $this->categoryService->getCategoryListWithIdAndName($request),
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('articles.index')->withErrors(['error' => 'Artigo não encontrado.']);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao carregar artigo para edição: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -94,14 +128,20 @@ class ArticleController extends Controller
      */
     public function update(ArticleRequest $request, int $id)
     {
-        $data = $request->only(array_keys($request->rules()));
+        try {
+            $data = $request->only(array_keys($request->rules()));
 
-        $article = $this->articleService->findArticleByIdOrFail($id);
+            $article = $this->articleService->findArticleByIdOrFail($id);
 
-        $this->articleService->saveArticle($data, $id);
+            $this->articleService->saveArticle($data, $id);
 
-        return redirect()->route('articles.index')
-            ->with('success', "Artigo {$article->title} foi editado com sucesso.");
+            return redirect()->route('articles.index')
+                ->with('success', "Artigo {$article->title} foi editado com sucesso.");
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('articles.index')->withErrors(['error' => 'Artigo não encontrado.']);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao editar artigo: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -109,11 +149,17 @@ class ArticleController extends Controller
      */
     public function destroy(int $id)
     {
-        $article = $this->articleService->findArticleByIdOrFail($id);
+        try {
+            $article = $this->articleService->findArticleByIdOrFail($id);
 
-        $this->articleService->deleteArticleById($id);
+            $this->articleService->deleteArticleById($id);
 
-        return redirect()->route('articles.index')
-            ->with('success', "Artigo {$article->title} foi removido com sucesso.");
+            return redirect()->route('articles.index')
+                ->with('success', "Artigo {$article->title} foi removido com sucesso.");
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('articles.index')->withErrors(['error' => 'Artigo não encontrado.']);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao remover artigo: '.$e->getMessage()]);
+        }
     }
 }

@@ -3,19 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CategoryRequest;
-use App\Services\ArticleService;
 use App\Services\CategoryService;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
     private CategoryService $categoryService;
 
-    private ArticleService $articleService;
-
-    public function __construct(ArticleService $articleService, CategoryService $categoryService)
+    public function __construct(CategoryService $categoryService)
     {
-        $this->articleService = $articleService;
         $this->categoryService = $categoryService;
     }
 
@@ -24,9 +22,13 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        return view('categories.index', [
-            'categories' => $this->categoryService->getPaginatedCategoryList($request),
-        ]);
+        try {
+            return view('categories.index', [
+                'categories' => $this->categoryService->getPaginatedCategoryList($request),
+            ]);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao carregar categorias: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -34,7 +36,11 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('categories.create');
+        try {
+            return view('categories.create');
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao carregar o formulário de criação de categoria: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -42,12 +48,16 @@ class CategoryController extends Controller
      */
     public function store(CategoryRequest $request)
     {
-        $data = $request->only(array_keys($request->rules()));
+        try {
+            $data = $request->only(array_keys($request->rules()));
 
-        $savedCategory = $this->categoryService->saveCategory($data);
+            $savedCategory = $this->categoryService->saveCategory($data);
 
-        return redirect()->route('categories.index')
-            ->with('success', "Categoria {$savedCategory->name} foi criada com sucesso.");
+            return redirect()->route('categories.index')
+                ->with('success', "Categoria {$savedCategory->name} foi criada com sucesso.");
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao criar categoria: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -55,9 +65,15 @@ class CategoryController extends Controller
      */
     public function edit(int $id)
     {
-        return view('categories.edit', [
-            'category' => $this->categoryService->findCategoryByIdOrFail($id),
-        ]);
+        try {
+            return view('categories.edit', [
+                'category' => $this->categoryService->findCategoryByIdOrFail($id),
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('categories.index')->withErrors(['error' => 'Categoria não encontrada.']);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao carregar categoria para edição: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -65,14 +81,20 @@ class CategoryController extends Controller
      */
     public function update(CategoryRequest $request, int $id)
     {
-        $category = $this->categoryService->findCategoryByIdOrFail($id);
+        try {
+            $category = $this->categoryService->findCategoryByIdOrFail($id);
 
-        $data = $request->only(array_keys($request->rules()));
+            $data = $request->only(array_keys($request->rules()));
 
-        $this->categoryService->saveCategory($data, $id);
+            $this->categoryService->saveCategory($data, $id);
 
-        return redirect()->route('categories.index')
-            ->with('success', "Categoria {$category->name} foi editada com sucesso.");
+            return redirect()->route('categories.index')
+                ->with('success', "Categoria {$category->name} foi editada com sucesso.");
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('categories.index')->withErrors(['error' => 'Categoria não encontrada.']);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao editar categoria: '.$e->getMessage()]);
+        }
     }
 
     /**
@@ -80,11 +102,17 @@ class CategoryController extends Controller
      */
     public function destroy(int $id)
     {
-        $category = $this->categoryService->findCategoryByIdOrFail($id);
+        try {
+            $category = $this->categoryService->findCategoryByIdOrFail($id);
 
-        $this->categoryService->deleteCategoryById($id);
+            $this->categoryService->deleteCategoryById($id);
 
-        return redirect()->route('categories.index')
-            ->with('success', "Categoria {$category->name} foi removida com sucesso.");
+            return redirect()->route('categories.index')
+                ->with('success', "Categoria {$category->name} foi removida com sucesso.");
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('categories.index')->withErrors(['error' => 'Categoria não encontrada.']);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => 'Erro ao remover categoria: '.$e->getMessage()]);
+        }
     }
 }
