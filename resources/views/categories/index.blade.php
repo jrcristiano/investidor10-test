@@ -47,7 +47,7 @@
                         <tr>
                             <th class="py-2 i10-text-dark" scope="row">{{ $category->id }}</th>
                             <td class="py-2 i10-text-dark">{{ $category->name }}</td>
-                            <td class="py-2 i10-text-dark">{{ $category->created_at_formatted }}</td>
+                            <td class="py-2 i10-text-dark">{{ $category->formatted_created_at }}</td>
                             <td class="py-2 i10-text-dark">
                                 <a class="btn i10-bg-gold text-light" href="{{ route('categories.edit', $category->id) }}">
                                     <i class="bi bi-pencil-square"></i>

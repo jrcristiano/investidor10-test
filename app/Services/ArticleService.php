@@ -17,13 +17,25 @@ class ArticleService extends Service
         parent::__construct($repository);
     }
 
-    public function getPaginatedArticleListByUserId()
+    public function getPaginatedArticleListByUserId(Request $request)
     {
-        $columns = $this->getModel()->getFillable();
+        $filters = $this->filters($request);
+
+        if ($request->get('busca')) {
+            $filters['whereILike'] = [
+                'title' => $request->get('busca'),
+            ];
+        }
+
+        if ($request->get('categoria_id')) {
+            $filters['where'] = [
+                'category_id' => $request->get('categoria_id'),
+            ];
+        }
 
         return $this->repository->fetchAll([
+            ...$filters,
             'paginated' => true,
-            'columns' => $columns,
             'where' => [
                 'user_id' => Auth::user()->id,
             ],

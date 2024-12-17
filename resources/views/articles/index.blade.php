@@ -3,7 +3,7 @@
         @include('components.header-section', [
             'actionText' => 'Novo artigo',
             'routeName' => 'articles.create',
-            'title' => 'Artigos'
+            'title' => request()->path() != 'artigos/meus-artigos' ? 'Artigos' : 'Meus artigos'
         ])
 
         @include('components.alert-success')

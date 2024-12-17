@@ -45,10 +45,11 @@ class ArticleController extends Controller
         ]);
     }
 
-    public function getPaginatedArticleListByUserId()
+    public function getPaginatedArticleListByUserId(Request $request)
     {
-        return view('articles.my-articles', [
-            'articles' => $this->articleService->getPaginatedArticleListByUserId(),
+        return view('articles.index', [
+            'articles' => $this->articleService->getPaginatedArticleListByUserId($request),
+            'categories' => $this->categoryService->getPaginatedCategoryList($request),
         ]);
     }
 

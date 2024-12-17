@@ -56,8 +56,10 @@
             @php
                 $status = $article->status ?? null;
             @endphp
-            <option {{ $status == 'rascunho' ? 'selected' : '' }} value="rascunho">Rascunho</option>
+            <option {{ $status == null ? 'selected' : '' }} value="">Selecionar status</option>
             <option {{ $status == 'publicado' ? 'selected' : '' }} value="publicado">Publicado</option>
+            <option {{ $status == 'rascunho' ? 'selected' : '' }} value="rascunho">Rascunho</option>
+
         </select>
     </div>
     <div class="w-50 px-2">
@@ -70,6 +72,7 @@
                 $articleCatId = $article->category_id ?? null;
             @endphp
 
+            <option {{ $articleCatId == null ? 'selected' : '' }} value="">Selecionar categoria</option>
             @foreach ($categories as $category)
                 <option {{ $category->id == old('category_id', $category->id ?? null) ? 'selected' : '' }} value="{{ old('category_id', $category->id ?? null) }}">
                     {{ $category->name }}
