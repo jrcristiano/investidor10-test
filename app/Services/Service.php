@@ -118,6 +118,8 @@ abstract class Service
 
         $filters['where'] = $request->get('where', []);
 
+        $filters['orWhere'] = $request->get('orWhere', []);
+
         $filters['whereILike'] = $request->get('whereILike', []);
 
         $filters['orderBy'] = $request->get('orderBy', 'desc');

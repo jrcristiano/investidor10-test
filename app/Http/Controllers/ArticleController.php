@@ -27,10 +27,8 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         try {
-            $articles = $this->articleService->getPaginatedArticleList($request);
-
             return view('articles.index', [
-                'articles' => $articles,
+                'articles' => $this->articleService->getPaginatedArticleList($request),
                 'categories' => $this->categoryService->getCategoryListWithIdAndName($request),
             ]);
         } catch (Exception $e) {

@@ -20,11 +20,6 @@
             </a>
         </li>
 
-
-        @php
-            // dd(request()->path())
-        @endphp
-
         <li class="nav-item rounded">
             <a class="nav-link py-3 rounded fw-500 {{ str_contains(request()->path(), 'artigos') && request()->path() != 'artigos/meus-artigos' ? 'active' : '' }}"
                href="{{ route('articles.index') }}">

@@ -57,6 +57,16 @@ abstract class Repository
                 }
             )
             ->when(
+                isset($orWhere) && ! $this->isEmptyArray($where),
+                function ($query) use ($orWhere) {
+                    foreach ($orWhere as $columnName => $value) {
+                        if (is_string($columnName)) {
+                            $query->orWhere($columnName, $value);
+                        }
+                    }
+                }
+            )
+            ->when(
                 isset($orderBy) && is_string($orderBy) && isset($sortBy) && (is_string($sortBy) || is_array($sortBy)),
                 function ($query) use ($sortBy, $orderBy) {
                     if (is_string($sortBy) && ! str_contains($sortBy, ',')) {

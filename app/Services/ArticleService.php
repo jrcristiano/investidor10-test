@@ -37,6 +37,7 @@ class ArticleService extends Service
             ...$filters,
             'paginated' => true,
             'where' => [
+                ...$filters['where'],
                 'user_id' => Auth::user()->id,
             ],
         ]);
